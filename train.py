@@ -1,4 +1,7 @@
-import string, re, argparse, sys
+import string
+import re
+import argparse
+import sys
 
 parser = argparse.ArgumentParser(description='A trainee program.')
 parser.add_argument("-in", "--input_dir",
@@ -32,7 +35,7 @@ for line in f:
         if (match):
             g.write(link + ' ' + match.group() + '\n')
             link = match.group()
-        #maybe will do end-words later
+        # maybe will do end-words later
     if (low == '*end*' and f == sys.stdin):
         break
 
