@@ -1,4 +1,7 @@
-import string, numpy, argparse, sys
+import string
+import numpy
+import argparse
+import sys
 
 parser = argparse.ArgumentParser(description='A generator program.')
 parser.add_argument("-m", "--model", default="database.txt",
@@ -16,13 +19,13 @@ if args.output:
     g = open(args.output, 'w')
 else:
     g = sys.stdout
-                    
 link = args.seed
+
 
 def generate_random(begin=""):
     choice = []
     f = open(args.model)
-    for line in f: 
+    for line in f:
         pair = list(map(str, line.rstrip().split()))
         if (pair[0] == begin):
             choice.append(pair[1])
@@ -33,14 +36,11 @@ def generate_random(begin=""):
         word = numpy.random.choice(choice, 1)[0]
     else:
         word = generate_random()
-    
     return word
-         
 
 for i in range(args.length):
     g.write(link + ' ')
     link = generate_random(link)
-
 
 if (g is not sys.stdout):
     g.close()
