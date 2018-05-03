@@ -26,6 +26,7 @@ Now creates directory "model" for our database based on --model parameter.
         os.mkdir(model_dir)
     os.chdir(args.model + "\\" + model_dir)
 
+
 def prepare_model():
     """
 Works a bit with old model, if it exists.
@@ -55,14 +56,14 @@ Saves into RAM our "index"-file for quicker access.
             index_dict[pair[0]] = int(pair[1])
 
     return file_count
-        
+
 
 def read_input(file_count):
     """
 Big function, reads input file. Input parameter - amount of files in old model.
 At the end we will have some tmp files. We store there pairs "string-string".
 All these pairs are pairs of consecutive words in input text.
-In file "tmpX", X - number, there are only pairs with first word having 
+In file "tmpX", X - number, there are only pairs with first word having
 number X in "index"-file.
 Returns the biggest X-number out of all "tmp"-files.
     """
@@ -70,7 +71,7 @@ Returns the biggest X-number out of all "tmp"-files.
     chars = re.compile('[\'\w-]+|[А-ЯЁёа-я-]+')
     files_before = file_count
     words_number = 0
-    
+
     for line in input_file:
         text = [x for x in line.rstrip().split()]
         for raw_word in text:
@@ -95,7 +96,7 @@ Calculates the number of file, where we should write a pair.
 You know that in every language some words are much popular than others.
 Because of that, they have more info and require more storage.
 But for me it's important for all "list"-files to consume approximately
-the same amount of storage. 
+the same amount of storage.
 So my "list"-files aren't storing the same amount of words. Instead of that,
 the number of words stored in file increases with the number of that file.
 First few files store only about 5-20 words, last files can have >500 words
@@ -187,8 +188,8 @@ A string in "list"-file looks like this:
                     for w in words:
                         if w != '':
                             word_freq = [x for x in w.split()]
-                            succ_word = word_freq[0]
-                            frequency[begin_word][succ_word] = int(word_freq[1])
+                            suc_word = word_freq[0]
+                            frequency[begin_word][suc_word] = int(word_freq[1])
                 base_file.close()
                 """
 Don't forget to clear "list"-file in order to write into it after.
@@ -196,7 +197,7 @@ Don't forget to clear "list"-file in order to write into it after.
                 with open("list"+str(file_number)+".rtf", "w"):
                     pass
         """
-Updates our dict with new pairs from "tmp"-file. 
+Updates our dict with new pairs from "tmp"-file.
         """
         try:
             curr_file = open("tmp"+str(file_number)+".rtf")
@@ -238,6 +239,7 @@ Deletes all "tmp"-files, they are not useful anymore.
             curr_file.close()
             os.remove("tmp"+str(n)+".rtf")
 
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='A trainee program.')
@@ -254,8 +256,8 @@ if __name__ == "__main__":
 
     prepare_input()
     index_dict = dict()
-    files_in_model = prepare_model()  
-    
+    files_in_model = prepare_model()
+
     tmp_files_amount = read_input(files_in_model)
 
     update_model()
