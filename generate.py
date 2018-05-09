@@ -21,12 +21,13 @@ Works with called args. Returns the first word of generated text.
     first = args.seed
 
     model_dir = os.getcwd()
-    if args.model == "\\model":
-        model_dir += "\\model"
+    if args.model == "model":
+        model_dir = os.path.join(model_dir, args.model)
     else:
         model_dir = args.model
 
     os.chdir(model_dir)
+
     return first
 
 
@@ -40,7 +41,7 @@ random word from "index"-file.
         out = np.random.choice(list(index_dict.keys()), 1)[0]
     else:
         file_number = index_dict[begin]
-        with open("list"+str(file_number)+".rtf") as curr_file:
+        with open("list"+str(file_number)+".txt") as curr_file:
             """
 Parses a string with taken word, it is located in some "list"-file.
             """
@@ -76,7 +77,7 @@ Normalize the frequences, then generate a random word from choice_arr.
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='A generator program.')
-    parser.add_argument("-m", "--model", default="\\model",
+    parser.add_argument("-m", "--model", default="model",
                         help="Input model path.")
     parser.add_argument("-l", "--length", type=int, default=100,
                         help="Length of output text.")
@@ -93,7 +94,7 @@ if __name__ == "__main__":
 Saves into dict our "index"-file for quicker access.
     """
     index_dict = dict()
-    with open("index.rtf") as index_file:
+    with open("index.txt") as index_file:
         for line in index_file:
             pair = [x for x in line.split()]
             index_dict[pair[0]] = int(pair[1])
