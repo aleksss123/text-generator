@@ -7,6 +7,7 @@ import argparse
 import sys
 import os
 import operator
+from collections import defaultdict
 
 
 class Trainer:
@@ -52,10 +53,12 @@ Function returns list with paths to all input files in input_dir.
 Now creates directory "model" for our database based on --model parameter.
         """
         model_dir = "model"
-        os.chdir(args.model)
+        if args.model is not None:
+            os.makedirs(args.model, exist_ok=True)
+            os.chdir(args.model)
         if model_dir not in os.listdir():
             os.mkdir(model_dir)
-        os.chdir(os.path.join(args.model, model_dir))
+        os.chdir(model_dir)
 
     def prepare_model(self):
         """
@@ -146,11 +149,8 @@ Numbers "7" and "50" below are the magic constants that control this process.
 Writes a pair to the dict.
                     """
                     if first_word not in self.frequency:
-                        self.frequency[first_word] = dict()
-                    if succ_word not in self.frequency[first_word]:
-                        self.frequency[first_word][succ_word] = 1
-                    else:
-                        self.frequency[first_word][succ_word] += 1
+                        self.frequency[first_word] = defaultdict(int)
+                    self.frequency[first_word][succ_word] += 1
                     first_word = succ_word
 
         if input_file is not sys.stdin:
@@ -195,16 +195,13 @@ A string in "list"-file looks like this:
                     lst = [x for x in line.split(':')]
                     beg_w = lst[0]
                     if beg_w not in self.frequency:
-                        self.frequency[beg_w] = dict()
+                        self.frequency[beg_w] = defaultdict(int)
                     words = lst[1].rstrip().split('#')
                     for w in words:
                         if w != '':
                             w_freq = [x for x in w.split()]
                             suc_w = w_freq[0]
-                            if suc_w not in self.frequency[beg_w]:
-                                self.frequency[beg_w][suc_w] = int(w_freq[1])
-                            else:
-                                self.frequency[beg_w][suc_w] += int(w_freq[1])
+                            self.frequency[beg_w][suc_w] += int(w_freq[1])
                 base_file.close()
                 """
 Don't forget to clear "list"-file in order to write into it after.
@@ -230,7 +227,7 @@ if __name__ == "__main__":
     parser.add_argument("-in", "--input_dir",
                         help="""Input dir path.
                         If not specified, stdin is used.""")
-    parser.add_argument("-m", "--model", default=os.getcwd(),
+    parser.add_argument("-m", "--model", default=None,
                         help="Received model file path (where to save).")
     parser.add_argument("-nlc", action="store_true",
                         help="""Don't bring texts to lowercase.

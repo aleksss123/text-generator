@@ -8,70 +8,112 @@ import sys
 import os
 
 
-def prepare_args():
+class Generator:
     """
-Works with called args. Returns the first word of generated text.
+Main class.
     """
-    global output_file
-    if args.output:
-        output_file = open(args.output, 'w')
-    else:
-        output_file = sys.stdout
+    def __init__(self):
+        self.output_file = ""
+        self.index_dict = dict()
+        self.gen_text = []
 
-    first = args.seed
+    def generate(self):
+        """
+Main function.
+        """
+        word = self.prepare_args()
+        """
+Saves into dict our "index"-file for quicker access.
+        """
+        with open("index.txt") as index_file:
+            for line in index_file:
+                pair = [x for x in line.split()]
+                self.index_dict[pair[0]] = int(pair[1])
+        """
+Generator cycle. Each step generates one word.
+        """
+        while len(self.gen_text) < args.length:
+            if word in self.index_dict:
+                self.gen_text.append(word)
+            word = self.generate_random(word)
 
-    model_dir = os.getcwd()
-    if args.model == "model":
-        model_dir = os.path.join(model_dir, args.model)
-    else:
-        model_dir = args.model
+        self.print_generated()
 
-    os.chdir(model_dir)
+    def prepare_args(self):
+        """
+    Works with called args. Returns the first word of generated text.
+        """
+        if args.output:
+            self.output_file = open(args.output, 'w')
+        else:
+            self.output_file = sys.stdout
 
-    return first
+        model_dir = os.getcwd()
+        if args.model == "model":
+            model_dir = os.path.join(model_dir, args.model)
+        else:
+            model_dir = args.model
+        os.chdir(model_dir)
 
+        return args.seed
 
-def generate_random(begin=""):
-    """
+    def generate_random(self, begin=""):
+        """
 The most important function. Takes a word, returns generated word.
 If it's not possible to generate a word from taken word, returns
 random word from "index"-file.
-    """
-    if begin is None or begin == "" or begin not in index_dict:
-        out = np.random.choice(list(index_dict.keys()), 1)[0]
-    else:
-        file_number = index_dict[begin]
-        with open("list"+str(file_number)+".txt") as curr_file:
-            """
+        """
+        if begin is None or begin == "" or begin not in self.index_dict:
+            out = np.random.choice(list(self.index_dict.keys()), 1)[0]
+        else:
+            file_number = self.index_dict[begin]
+            with open("list"+str(file_number)+".txt") as curr_file:
+                """
 Parses a string with taken word, it is located in some "list"-file.
-            """
-            for line in curr_file:
-                pair = [x for x in line.split(':')]
-                if pair[0] == begin:
-                    cont_words = pair[1].split('#')
-                    """
+                """
+                for line in curr_file:
+                    pair = [x for x in line.split(':')]
+                    if pair[0] == begin:
+                        cont_words = pair[1].split('#')
+                        """
 I use 2 arrays: choice_arr for all possible words for output,
 frequency - for their frequences.
 Variable "summ" is a sum of all frequences.
-                    """
-                    frequency = []
-                    choice_arr = []
-                    summ = 0
-                    for pair_word_freq in cont_words:
-                        if pair_word_freq != '':
-                            pair = [x for x in pair_word_freq.split()]
-                            succ_word = pair[0]
-                            choice_arr.append(succ_word)
-                            frequency.append(float(pair[1]))
-                            summ += int(pair[1])
-                    """
+                        """
+                        freqs = []
+                        choice_arr = []
+                        summ = 0
+                        for pair_word_freq in cont_words:
+                            if pair_word_freq != '':
+                                pair = [x for x in pair_word_freq.split()]
+                                succ_word = pair[0]
+                                choice_arr.append(succ_word)
+                                freqs.append(float(pair[1]))
+                                summ += int(pair[1])
+                        """
 Normalize the frequences, then generate a random word from choice_arr.
-                    """
-                    for i in range(len(frequency)):
-                        frequency[i] = frequency[i]/summ
-                    out = np.random.choice(choice_arr, None, True, frequency)
+                        """
+                        for i in range(len(freqs)):
+                            freqs[i] = freqs[i]/summ
+                        out = np.random.choice(choice_arr, None, True, freqs)
 
-    return out
+        return out
+
+    def print_generated(self):
+        """
+Prints generated text splitted by strings. Each string has random length
+(2-10 words).
+        """
+        outcnt = 0
+        while outcnt < len(self.gen_text):
+            rand = np.random.randint(2, 11)
+            for i in range(min(rand, len(self.gen_text) - outcnt)):
+                self.output_file.write(self.gen_text[outcnt+i] + " ")
+            outcnt += rand
+            self.output_file.write("\n")
+
+        if self.output_file is not sys.stdout:
+            self.output_file.close()
 
 
 if __name__ == "__main__":
@@ -88,24 +130,5 @@ if __name__ == "__main__":
                         Standart output by default.""")
     args = parser.parse_args()
 
-    word = prepare_args()
-
-    """
-Saves into dict our "index"-file for quicker access.
-    """
-    index_dict = dict()
-    with open("index.txt") as index_file:
-        for line in index_file:
-            pair = [x for x in line.split()]
-            index_dict[pair[0]] = int(pair[1])
-
-    """
-Generator cycle. Each step generates one word.
-    """
-    for i in range(args.length):
-        if word is not None:
-            output_file.write(word + ' ')
-        word = generate_random(word)
-
-    if output_file is not sys.stdout:
-        output_file.close()
+    generator = Generator()
+    generator.generate()
