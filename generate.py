@@ -107,18 +107,6 @@ Normalize the frequences, then generate a random word from choice_arr.
 
         return out
 
-    def print_generated(self):
-        outcnt = 0
-        while outcnt < len(self.gen_text):
-            rand = np.random.randint(2, 11)
-            for i in range(min(rand, len(self.gen_text) - outcnt)):
-                self.output_file.write(self.gen_text[outcnt+i] + " ")
-            outcnt += rand
-            self.output_file.write("\n")
-
-        if self.output_file is not sys.stdout:
-            self.output_file.close()
-
 
 if __name__ == "__main__":
 
