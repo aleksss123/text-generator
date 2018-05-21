@@ -59,11 +59,7 @@ Prints generated text splitted by strings. Each string has random length
         else:
             self.output_file = sys.stdout
 
-        model_dir = os.getcwd()
-        if args.model == "model":
-            model_dir = os.path.join(model_dir, args.model)
-        else:
-            model_dir = args.model
+        model_dir = os.path.normpath(os.path.join(os.getcwd(), args.model))
         os.chdir(model_dir)
 
         return args.seed

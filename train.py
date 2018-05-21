@@ -45,6 +45,7 @@ Main function.
 Works with --input_dir parameter.
 Function returns list with paths to all input files in input_dir.
         """
+        curr_wd = os.getcwd()
         if args.input_dir:
             path = os.path.normpath(os.path.join(os.getcwd(), args.input_dir))
             os.chdir(path)
@@ -57,6 +58,7 @@ Function returns list with paths to all input files in input_dir.
         """
 Now creates directory "model" for our database based on --model parameter.
         """
+        os.chdir(curr_wd)
         model_dir = "model"
         if args.model is not None:
             os.makedirs(args.model, exist_ok=True)
