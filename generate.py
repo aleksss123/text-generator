@@ -60,6 +60,7 @@ Prints generated text splitted by strings. Each string has random length
             self.output_file = sys.stdout
 
         model_dir = os.path.normpath(os.path.join(os.getcwd(), args.model))
+        model_dir = os.path.normpath(os.path.join(model_dir, "model"))
         os.chdir(model_dir)
 
         return args.seed
