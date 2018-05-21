@@ -49,7 +49,6 @@ Prints generated text splitted by strings. Each string has random length
                 self.gen_text.clear()
                 outcnt += rand
                 rand = np.random.randint(2, 11)
-            
 
     def prepare_args(self):
         """

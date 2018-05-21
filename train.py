@@ -14,6 +14,10 @@ class Trainer:
     """
 Main class. Here are the most important variables.
     """
+    MAX_FILE_NUMBER = 50
+    WORD_MULTIPLIER = 7
+    FILE_DIVIDER = 10
+
     def __init__(self):
         self.lst_files_amount = 1
         self.index_dict = dict()
@@ -99,8 +103,8 @@ Returns the biggest X-number out of all possible "list"-files + 2 arrays.
         """
         first_word = None
         chars = re.compile('[\'\w-]+|[А-ЯЁёа-я-]+')
-        files_before = max(self.lst_files_amount//10, 1)
-        files_now = max(self.lst_files_amount//10, 1)
+        files_before = max(self.lst_files_amount//FILE_DIVIDER, 1)
+        files_now = max(self.lst_files_amount//FILE_DIVIDER, 1)
         words_number = 0
         for line in input_file:
             text = [x for x in line.rstrip().split()]
@@ -134,13 +138,14 @@ the number of words stored in file increases with the number of that file.
 First few files store only about 5-20 words, last files can have >500 words
 inside. It is based on idea that the "popular" words will appear in input
 earlier than others.
-Numbers "7" and "50" below are the magic constants that control this process.
                     """
                     if first_word in self.index_dict:
                         file_number = self.index_dict[first_word]
                     else:
                         words_number += 1
-                        if words_number > 7*min(50, files_now-files_before+1):
+                        pyc = min(MAX_FILE_NUMBER, files_now-files_before+1)
+                        pyc *= WORD_MULTIPLIER
+                        if words_number > pyc:
                             words_number = 1
                             files_now += 1
                         file_number = files_now
