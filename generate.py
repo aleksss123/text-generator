@@ -32,12 +32,24 @@ Saves into dict our "index"-file for quicker access.
         """
 Generator cycle. Each step generates one word.
         """
-        while len(self.gen_text) < args.length:
+        outcnt = 0
+        rand = np.random.randint(2, 11)
+        while outcnt < args.length:
             if word in self.index_dict:
                 self.gen_text.append(word)
             word = self.generate_random(word)
-
-        self.print_generated()
+            """
+Prints generated text splitted by strings. Each string has random length
+(2-10 words).
+            """
+            if len(self.gen_text) == rand:
+                for i in range(min(rand, args.length - outcnt)):
+                    self.output_file.write(self.gen_text[i] + " ")
+                self.output_file.write("\n")
+                self.gen_text.clear()
+                outcnt += rand
+                rand = np.random.randint(2, 11)
+            
 
     def prepare_args(self):
         """
@@ -100,10 +112,6 @@ Normalize the frequences, then generate a random word from choice_arr.
         return out
 
     def print_generated(self):
-        """
-Prints generated text splitted by strings. Each string has random length
-(2-10 words).
-        """
         outcnt = 0
         while outcnt < len(self.gen_text):
             rand = np.random.randint(2, 11)
