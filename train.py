@@ -14,7 +14,7 @@ class Trainer:
     """
 Main class. Here are the most important variables.
     """
-    MAX_FILE_NUMBER = 50
+    MAX_FILE_NUM = 50
     WORD_MULTIPLIER = 7
     FILE_DIVIDER = 10
 
@@ -46,7 +46,8 @@ Works with --input_dir parameter.
 Function returns list with paths to all input files in input_dir.
         """
         if args.input_dir:
-            os.chdir(args.input_dir)
+            path = os.path.normpath(os.path.join(os.getcwd(), args.input_dir))
+            os.chdir(path)
             list_of_files = os.listdir()
             for f_name in list_of_files:
                 if f_name[len(f_name)-3:] == "txt":
@@ -103,8 +104,8 @@ Returns the biggest X-number out of all possible "list"-files + 2 arrays.
         """
         first_word = None
         chars = re.compile('[\'\w-]+|[А-ЯЁёа-я-]+')
-        files_before = max(self.lst_files_amount//FILE_DIVIDER, 1)
-        files_now = max(self.lst_files_amount//FILE_DIVIDER, 1)
+        files_before = max(self.lst_files_amount//self.FILE_DIVIDER, 1)
+        files_now = max(self.lst_files_amount//self.FILE_DIVIDER, 1)
         words_number = 0
         for line in input_file:
             text = [x for x in line.rstrip().split()]
@@ -143,8 +144,8 @@ earlier than others.
                         file_number = self.index_dict[first_word]
                     else:
                         words_number += 1
-                        pyc = min(MAX_FILE_NUMBER, files_now-files_before+1)
-                        pyc *= WORD_MULTIPLIER
+                        pyc = min(self.MAX_FILE_NUM, files_now-files_before+1)
+                        pyc *= self.WORD_MULTIPLIER
                         if words_number > pyc:
                             words_number = 1
                             files_now += 1
